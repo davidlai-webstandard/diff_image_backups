@@ -2,6 +2,8 @@
 
 all: blk_hash blk_genpatch blk_patch
 
+all-dbg: blk_hash-dbg blk_genpatch-dbg blk_patch-dbg
+
 blk_hash: blk_hash.c blk_md5.o blk_utils.o blk_imageutils.o
 	cc -O2 -o blk_hash blk_hash.c blk_md5.o blk_utils.o blk_imageutils.o -lssl -lcrypto
 
@@ -11,7 +13,7 @@ blk_hash-dbg: blk_hash.c blk_md5-dbg.o blk_utils-dbg.o blk_imageutils-dbg.o
 blk_genpatch: blk_genpatch.c blk_md5.o blk_utils.o blk_patchfileutils.o blk_imageutils.o
 	cc -O2 -o blk_genpatch blk_genpatch.c blk_md5.o blk_utils.o blk_patchfileutils.o blk_imageutils.o -lssl -lcrypto
 
-blk_genpatch-dbg: blk_genpatch.c blk_md5-dbg.o blk_utils.o blk_patchfileutils.o blk_imageutils.o
+blk_genpatch-dbg: blk_genpatch.c blk_md5-dbg.o blk_utils-dbg.o blk_patchfileutils-dbg.o blk_imageutils-dbg.o 
 	cc -g -o blk_genpatch-dbg blk_genpatch.c blk_md5-dbg.o blk_utils-dbg.o blk_patchfileutils-dbg.o blk_imageutils-dbg.o -lssl -lcrypto
 
 blk_patch: blk_patch.c blk_md5.o blk_utils.o blk_patchfileutils.o blk_imageutils.o
@@ -46,6 +48,10 @@ blk_imageutils-dbg.o: blk_imageutils.c blk_imageutils.h blk_utils.h
 
 
 clean:
-	rm -f blk_md5.o blk_hash blk_genpatch
+	rm -f blk_imageutils.o  blk_md5.o  blk_patchfileutils.o  blk_utils.o
+	rm -f blk_imageutils-dbg.o blk_md5-dbg.o blk_patchfileutils-dbg.o
+	rm -f blk_utils-dbg.o
+	rm -f blk_hash blk_genpatch blk_patch
+	rm -f blk_hash-dbg blk_genpatch-dbg blk_patch-dbg
 
 

@@ -4,7 +4,27 @@ Helper programs for differential image backups of block devices (entire hard dri
 # blk_hash, blk_genpatch, blk_patch
 
 These 3 programs will assist you in creating a backup system for
-large disk images.  One of the problems with backups of entire disk
+large disk images.
+
+# Compiling
+
+see the Makefile
+
+On Linux you will need to have the usual dev tools like the C compiler
+and make, etc..
+
+You will also need to load the openssl-devel package for the header
+files and libs.
+The program will compile against 1.0.0 and 1.1.0 openssl.  There were some
+significant API changes between them but the code takes care of it.
+
+optionally make the -dbg version of the program if you want to take a
+crack at running the debugger against it.  best of luck.
+
+
+# Differential Backups
+
+One of the problems with backups of entire disk
 images is you will need to store gigantic image files (10Gig - 200 Gig or more).
 Image size are on the order  of the size of the hard drives.  If you plan to do a daily backup the
 storage needs will soon overwhelm even the largest storage servers.
