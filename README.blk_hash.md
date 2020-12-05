@@ -36,13 +36,6 @@ input.  Each md5 hash is 16 bytes (binary).  So, for example, a stream of size 1
 
 The program leverages libssl for the hashing function.
 
-# Compiling
-
-see the Makefile
-
-The program will compile against 1.0.0 and 1.1.0 openssl.  There were some
-significant API changes between them but the code takes care of it.
-
 # testing
 
 Using a sample input file Video.Sample.mp4 size 845734063
