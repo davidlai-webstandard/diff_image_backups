@@ -116,13 +116,14 @@ regenerate the desired image.
 
 
 * **blk_hash** - this program generates a hashset file for an image, use this when
- storing a "full" backup image.
+ storing a "full" backup image.  We will call this image the origin image and
+the hashset the origin hashset.
 
-* **blk_genpatch** - this program compares a new image against an old hashset and
+* **blk_genpatch** - this program compares a new image against an origin hashset and
  creates a patchset file consisting only of the changed disk blocks.
 
-* **blk_patch** - this program patches an old image with a patchset to regenerate
- the new image
+* **blk_patch** - this program patches an origin image with a patchset to regenerate
+ the image which corresponds to the patchset
 
 # Other programs considered
 
@@ -224,6 +225,8 @@ may look like this:
 
 The result of the above will place the day24 disk image in the new device.
 The device can be dropped into a VM and booted.
+
+# Rolling backups
 
 If you want to do rolling backups, you might want to do something like
 create a new full image every 30 days, and rebase the patchsets on the
