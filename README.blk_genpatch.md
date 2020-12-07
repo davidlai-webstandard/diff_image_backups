@@ -21,11 +21,12 @@ useful to get a count of how many blocks have changed.
 
 -a specifies a percentage (simple integer from 1-99) threshold for aborting.  If
 the percentage of changed blocks exceeds this percentage, the program will abort early
-and exit with status 2.  For example A script running this program can monitor the
-exit status and adjust its backup strategy.
+and exit with status 2 and a message with "Abort:".
+For example A script running this program can monitor the
+exit status or check stderr for "Abort:" and adjust its backup strategy.
 
--z = ignore size differences, otherwise unmatched hashfile and image size will exit with status 2.  Its undefined what happens if you actually try to use the
-hashfile generated.
+-z = ignore size differences, otherwise unmatched hashfile and image size will exit with status 2 and an appripriate Abort: message.
+The truncated patchfile generated is of no use and should be discarded.
 
 
 
