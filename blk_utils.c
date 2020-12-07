@@ -5,6 +5,6 @@
 void die(char *message)
 {
   fprintf(stderr,"Error: %s\n",message);
-  exit(1);
+  exit(2);
 }
 

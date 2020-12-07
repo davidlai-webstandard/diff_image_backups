@@ -221,11 +221,11 @@ int main(int argc, char *argv[])
  if (hashfile_size < num_hashes * sizeof(md5hash)) {
     size_diff=image_size - ((hashfile_size / sizeof(md5hash))*BLOCKSIZE);
     fprintf(stderr,"Image file larger than expected by %llu bytes\n",size_diff);
-    if (!allow_size_difference) { die("Abort"); }
+    if (!allow_size_difference) { die("Abort Size Mismatch"); }
  } else if (hashfile_size >  num_hashes * sizeof(md5hash)) {
     size_diff=((hashfile_size/ sizeof(md5hash))*BLOCKSIZE)-image_size;
     fprintf(stderr,"Image file smaller than expected by %llu bytes\n",size_diff);
-    if (!allow_size_difference) { die("Abort"); }
+    if (!allow_size_difference) { die("Abort Size Mismatch"); }
  }
  
  
