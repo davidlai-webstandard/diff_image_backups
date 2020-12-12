@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
        if (num_patches > abort_threshold) {
 	/* abort, patchfile too large */
         md5_end();
-        fprintf(stderr,"Abort threshold %llu patches exceeded\n",abort_threshold);
+        fprintf(stderr,"Abort: threshold %llu patches exceeded\n",abort_threshold);
 	exit(2);
        }
        add_patchblock(current_offset, image_block);
