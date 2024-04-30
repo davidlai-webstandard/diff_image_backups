@@ -8,10 +8,12 @@
 
 #include "blk_patchfileutils.h"
 
+#include <assert.h>
+
 // a structure to make it easier to compare md5 hashes which are
 // 16 bytes in length
 typedef   union {
-    unsigned char hash[16];
+    unsigned char hash[MD5_HASH_SIZE];
     struct {
       uint64_t a;
       uint64_t b;
@@ -140,18 +142,20 @@ md5hash *next_hash(void)
 
 void usage(char *argv[])
 {
-fprintf(stderr,"Usage: %s -i image -h hashfile [-o patchfile] [-v] [-a percentage] [-z]\n", argv[0]);
+fprintf(stderr,"Usage: %s -i image -h hashfile [-o patchfile] [-v] [-a percentage] [-z] [-b blocklist]\n", argv[0]);
 fprintf(stderr," reads image and compares its block hashes against the\n");
 fprintf(stderr," hashes in hashfile.  It will output a patchfile or\n");
 fprintf(stderr," stdout if patchfile is '-'.  If -o  is not specified\n");
 fprintf(stderr," then no patchfile is produced.  -v reports the statistics\n");
 fprintf(stderr," to stderr which include how many blocks changed.\n");
 fprintf(stderr," -a specifies a percentage (simple integer from 1-99) for aborting early.  If\n");
-fprintf(stderr," the percentage of changed blocks\n");
-fprintf(stderr," exceeds this percentage, the program will abort early\n");
-fprintf(stderr," and exit with status 2.\n");
+fprintf(stderr,"  the percentage of changed blocks\n");
+fprintf(stderr,"  exceeds this percentage, the program will abort early\n");
+fprintf(stderr,"  and exit with status 2.\n");
 fprintf(stderr," -z = ignore size differences, otherwise unmatched \n");
-fprintf(stderr," hashfile and image size will exit with status 2.\n");
+fprintf(stderr,"  hashfile and image size will exit with status 2.\n");
+fprintf(stderr," -b blocklist = output a list of block numbers that differ\n");
+fprintf(stderr,"  into the blocklist file\n");
 exit(1);
 }
 
@@ -161,6 +165,7 @@ int main(int argc, char *argv[])
  char *image_file_name=NULL;
  char *hash_file_name=NULL;
  char *patch_file_name=NULL;
+ char *blocklist_file_name=NULL;
  int verbose=0;
  int abort_percent=0;
  int allow_size_difference=0;
@@ -171,9 +176,13 @@ int main(int argc, char *argv[])
  current_offset=0;
  uint64_t  abort_threshold = UINT64_MAX;
  uint64_t   num_patches = 0;
+ uint64_t blocknum=0;
  char *image_block;
  md5hash *old_hash_p;
  offset_t image_size;
+ FILE *fbl=NULL;
+
+ assert(16 == sizeof(md5hash)); // we want to be able to compare 2 8-byte integers that make up the hash
 
  for (i=1; i<argc; i++) {
   if (strcmp(argv[i],"-i")==0) {
@@ -189,6 +198,11 @@ int main(int argc, char *argv[])
   if (strcmp(argv[i],"-o")==0) {
      i++;
      if (!(patch_file_name=argv[i])) { usage(argv); }
+     continue;
+  }
+  if (strcmp(argv[i],"-b")==0) {
+     i++;
+     if (!(blocklist_file_name=argv[i])) { usage(argv); }
      continue;
   }
   if (strcmp(argv[i],"-v")==0) {
@@ -208,6 +222,14 @@ int main(int argc, char *argv[])
  }
  if (!hash_file_name || !image_file_name) { usage(argv); }
  if (abort_percent < 0 || abort_percent>99) { usage(argv); }
+
+ // open the optional blocklist file
+ if (blocklist_file_name) {
+   if (!(fbl = fopen(blocklist_file_name,"w"))) {
+     fprintf(stderr,"Abort: cant write %s\n",blocklist_file_name);
+     exit(2);
+   }
+ }
  
  // open the image file and get the size of the image file
  image_size = open_image(image_file_name,0);
@@ -249,6 +271,7 @@ int main(int argc, char *argv[])
      /* done */
      add_patchblock(0,NULL); /* close the patchfile at end */
      md5_end();  /* cleanup the hashing function */
+     if (fbl) { fclose(fbl); }
      if (verbose) {
        fprintf(stderr,"Wrote %llu patch blocks / %llu total blocks = %d percent\n", num_patches, num_hashes, (num_hashes==0)?0:(int)((num_patches * 100)/num_hashes));
      }
@@ -267,8 +290,10 @@ int main(int argc, char *argv[])
 	exit(2);
        }
        add_patchblock(current_offset, image_block);
+       if (fbl) { fprintf(fbl,"%llu\n",blocknum); }
    }
    current_offset+=BLOCKSIZE;
+   blocknum++;
  }
 
 }

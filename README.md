@@ -342,6 +342,48 @@ guarantee our restore window.
 90 FULL 90
 ```
 
+# Note on LVM and thin provisioning
+
+It seems like LVM internally uses some form of thin provisioning - the system
+keeps track of which disk blocks within a volume are "used" (ie. have 
+previously been written to) and assumes its OK to use "unused" blocks within
+the volume for other purposes.
+
+Example: if you create a logical volume of, say 100 Gig, and put a filesystem on
+it (example: ext4) as thus:
+
+ lvcreate -L 100G -n testvolume volgrp
+ mkfs -t ext4 /dev/volgrp/testvolume
+
+The mkfs only writes a small number of disk blocks needed to initialize
+the filesystem.  Additionally if you start placing a small amount of files
+on the filesystem, only the disk blocks needed for the files will be written.
+Only the blocks written to are considered "used" by the system, possibly a
+small percentage of the 100 Gig.
+
+The volume manager may, in its discretion, use the "unused" blocks for other
+purposes.
+
+This creates a small problem for the differential backup strategy, when it
+does its backup of disk blocks that "changed", it may backup blocks that 
+are used by the system unrelated to the filesystem.  While this doesnt cause
+a problem for backing up and restoring, it can consume a large amount of
+backup space unnecessarily.
+
+The fix for this is to initially write all blocks in the volume, therefore
+tricking the system into thinking all disk blocks are "used", and therefore
+it wont attempt to reuse any blocks.
+
+Using the above example we add in a dd command to write all blocks before we
+initialize the filesystem, ie.
+
+ lvcreate -L 100G -n testvolume volgrp
+ dd if=/dev/zero of=/dev/volgrp/testvolume
+ mkfs -t ext4 /dev/volgrp/testvolume
+
+While this does take an extra (and possibly time consuming) initial step,
+it will reduce backup resources in the long run.
+
 
 # Design considerations
 

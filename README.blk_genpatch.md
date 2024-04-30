@@ -8,7 +8,7 @@ current image.
 
 # usage
 
-Usage: blk_genpatch -i image -h hashfile [-o patchfile] [-v] [-a percentage] [-z]
+Usage: blk_genpatch -i image -h hashfile [-o patchfile] [-v] [-a percentage] [-z] [-b blocklist]
 
 reads image and compares its block hashes against the
 hashes in hashfile.  It will output a patchfile or
@@ -26,8 +26,11 @@ For example A script running this program can monitor the
 exit status or check stderr for "Abort:" and adjust its backup strategy.
 
 -z = ignore size differences, otherwise unmatched hashfile and image size will exit with status 2 and an appripriate Abort: message.
-The truncated patchfile generated is of no use and should be discarded.
 
+-b blocklist = write the list of changed blocks (block numbers) to blocklist
+
+A truncated patch file can be generated if the program exits early.
+This truncated patchfile is of no use and should be discarded.
 
 
 # testing

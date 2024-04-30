@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #define BLOCKSIZE 4096
-#define NUM_BLOCKS_64K	16	/* number of blocks in buffer 64K buffer */
+#define NUM_BLOCKS_64K	(65536/BLOCKSIZE)	/* number of blocks in buffer 64K buffer */
 
 extern void die(char *message);
 

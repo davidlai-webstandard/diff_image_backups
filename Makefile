@@ -53,5 +53,7 @@ clean:
 	rm -f blk_utils-dbg.o
 	rm -f blk_hash blk_genpatch blk_patch
 	rm -f blk_hash-dbg blk_genpatch-dbg blk_patch-dbg
+	rm -f hash_cmp
 
-
+hash_cmp: hash_cmp.c
+	cc -O2 -o hash_cmp hash_cmp.c
